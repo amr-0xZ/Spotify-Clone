@@ -2,6 +2,8 @@ import cloudinary from "../lib/cloudinary.js"
 import { Album } from "../models/album.model.js"
 import { Song } from "../models/song.model.js"
 
+
+// helper function
 const uploadToCloudinary = async (file)=>{
     try {
         const result = await cloudinary.uploader.upload(file.tempFilePath,{
@@ -14,6 +16,7 @@ const uploadToCloudinary = async (file)=>{
         throw new Error("error in uploading to cloudinary")
     }
 }
+
 
 export const createSong = async (req,res,next)=>{
     try {
@@ -49,6 +52,30 @@ export const createSong = async (req,res,next)=>{
 
     } catch (error) {
         console.log("error in createSong "+error);
+        next(error)
+    }
+}
+
+
+export const deleteSong = async (req,res,next)=>{
+    try {
+        const {id} = req.params
+        const song = await Song.findById(id)
+
+        if(song){
+            if(song.albumId){
+                await Album.findByIdAndUpdate(song.albumId,{
+                    $pull: {songs: song._id}
+                })
+            }
+            await Song.findByIdAndDelete(id)
+            return res.status(200).json({message: "Song deleted successfully"})
+        }else{
+            return res.status(400).json({message: "song not found"})
+        }
+
+    } catch (error) {
+        console.log("error in delete song "+error);
         next(error)
     }
 }
