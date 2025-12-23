@@ -8,4 +8,10 @@ const albumSchema = new mongoose.Schema({
     songs: [{type: mongoose.Schema.Types.ObjectId, ref: "Song"}]
 },{timestamps: true})
 
+
+albumSchema.index(
+    {title: "text"}
+)
+
+
 export const Album = mongoose.model('Album',albumSchema)

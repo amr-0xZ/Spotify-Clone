@@ -9,6 +9,14 @@ const songSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    tag: {
+        type: String,
+        required: true
+    },
+    playCount: {
+        type: Number,
+        default: 0
+    },
     imageUrl: {
         type: String,
         required: true
@@ -27,5 +35,11 @@ const songSchema = new mongoose.Schema({
         required: false
     }
 }, {timestamps: true})
+
+songSchema.index(
+    {
+        title: "text"
+    }
+)
 
 export const Song = mongoose.model("Song",songSchema)

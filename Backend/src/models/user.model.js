@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 const userSchema = new mongoose.Schema({
     fullName: {
@@ -13,7 +13,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true
-    }
+    },
+    likedSongs: [{type: mongoose.Schema.Types.ObjectId, ref: "Song"}],
+    frindes: [{type: mongoose.Schema.Types.ObjectId, ref: "User"}],
+    follow: [{type: mongoose.Schema.Types.ObjectId, ref:"User"}],
+    followers: [{type: mongoose.Schema.Types.ObjectId, ref: "User"}]
 }, {timestamps: true})
 
 export const User = mongoose.model("User",userSchema)
