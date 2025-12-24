@@ -1,5 +1,5 @@
 import { Song } from "../models/song.model.js";
-import {User} from "../models/user.model"
+import {User} from "../models/user.model.js"
 
 
 export const getAllSongs = async (req,res,next)=>{
