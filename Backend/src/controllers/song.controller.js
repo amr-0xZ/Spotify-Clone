@@ -83,3 +83,43 @@ export const getLikedSongs = async (req,res,next)=>{
         next(error)
     }
 }
+
+export const likeSong = async (req,res,next)=>{
+    try {
+        const uid = req.auth.userId
+        const songId = req.body
+        const song = await Song.findById(songId)
+
+        if(!song){
+            return res.status(404).json({message: "song not found"})
+        }
+
+        await User.updateOne({clerkId: uid},{$addToSet:{likedSongs: songId}})
+
+        res.status(200).json({success: true}, song)
+
+    } catch (error) {
+        console.log("error in likeSong "+error);
+        next(error)
+    }
+}
+
+export const unLikeSong = async (req,res,next)=>{
+    try {
+        const uid = req.auth.userId
+        const songId = req.params
+        const song = await Song.findById(songId)
+
+        if(!song){
+            return res.status(404).json({message: "song not found"})
+        }
+
+        await User.updateOne({clerkId: uid},{$pull:{likedSongs: songId}})
+        
+        res.status(200).json(song)
+
+    } catch (error) {
+        console.log("error in unlikeSong "+error);
+        next(error)
+    }
+}

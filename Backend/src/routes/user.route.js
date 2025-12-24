@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { protectRout, requireAdmin } from "../middlewares/auth.middleware.js";
-import { followUser, getAllUsers, getCurrentUser, getUserById } from "../controllers/user.controller.js";
+import { followUser, getAllUsers, getCurrentUser, getUserById, unFollowUser } from "../controllers/user.controller.js";
 
 const router = Router()
 
@@ -12,5 +12,6 @@ router.get('/current', getCurrentUser)
 router.post('/', followUser)
 router.delete('/:id', unFollowUser)
 
+//to do: getMessages
 
 export default router

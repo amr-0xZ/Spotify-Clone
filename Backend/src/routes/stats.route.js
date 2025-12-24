@@ -1,9 +1,9 @@
 import { Router } from "express";
+import {protectRout, requireAdmin} from "../middlewares/auth.middleware.js"
 
 const router = Router()
 
-router.get('/', (req,res)=>{
-    res.send("stats requested in GET method")
-})
+
+router.get('/', protectRout, requireAdmin, getStats)
 
 export default router

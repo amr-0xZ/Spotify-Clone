@@ -1,10 +1,10 @@
-import { use } from "react";
 import { User } from "../models/user.model.js";
 
 
 export const getAllUsers = async (req, res, next)=>{
     try {
-        const users = await User.find()
+        const currentUserId = req.auth.userId
+        const users = await User.find({clerkId: {$ne: currentUserId}})
         res.status(200).json(users)
     } catch (error) {
         console.log("error in getAllUsers "+error);
@@ -16,7 +16,7 @@ export const getAllUsers = async (req, res, next)=>{
 export const getUserById = async (req,res,next)=>{
     try {
         const {id} = req.params
-        const user = await User.find({_id: id})
+        const user = await User.findOne({_id: id})
         if(!user){
             return res.status(404).json("User not found")
         }
@@ -31,7 +31,7 @@ export const getUserById = async (req,res,next)=>{
 export const getCurrentUser = async (req,res,next)=>{
     try {
         const id = req.auth.userId
-        const user = await User.find({clerkId: id})
+        const user = await User.findOne({clerkId: id})
         res.status(200).json(user)
     } catch (error) {
         console.log("error in getCurrentUser "+error);
@@ -44,23 +44,23 @@ export const followUser = async (req,res,next)=>{
     try {
         const {toFollow} = req.pody
         const authed = req.auth.userId
-        const authedId = await User.find({clerkId: authed}).select("_id")
+        const authedId = await User.findOne({clerkId: authed}).select("_id")
         
         await User.findByIdAndUpdate(authedId,{
-            $push: {follow: toFollow}
+            $addToSet: {follow: toFollow}
         })
         await User.findByIdAndUpdate(toFollow,{
-            $push: {followers: authedId}
+            $addToSet: {followers: authedId}
         })
         
-        const isFriend = await User.find({clerkId: authed}).select("followers").findById(toFollow)
+        const isFriend = await User.findById(authedId).select("followers").findById(toFollow)
         
         if(isFriend){
             await User.findByIdAndUpdate(authedId,{
-                $push: {frindes: toFollow}
+                $addToSet: {frindes: toFollow}
             })
             await User.findByIdAndUpdate(toFollow,{
-                $push: {frindes: authedId}
+                $addToSet: {frindes: authedId}
             })
         }
 
@@ -68,6 +68,39 @@ export const followUser = async (req,res,next)=>{
 
     } catch (error) {
         console.log("error in followUser "+error);
+        next(error)
+    }
+}
+
+
+export const unFollowUser = async (req,res,next)=>{
+    try {
+        const {toUnFollow} = req.params
+        const authed = req.auth.userId
+        const authedId = await User.findOne({clerkId: authed}).select("_id")
+        
+        await User.findByIdAndUpdate(authedId,{
+            $pull: {follow: toUnFollow}
+        })
+        await User.findByIdAndUpdate(toUnFollow,{
+            $pull: {followers: authedId}
+        })
+
+        const isFriend = await User.findById(authedId).select("frindes").findById(toUnFollow)
+
+        if(isFriend){
+            await User.findByIdAndUpdate(authedId,{
+                $pull: {frindes: toUnFollow}
+            })
+            await User.findByIdAndUpdate(toUnFollow,{
+                $pull: {frindes: authedId}
+            })
+        }
+
+        res.status(200).json({success: true})
+
+    } catch (error) {
+        console.log("error in unFollowUser "+error);
         next(error)
     }
 }
