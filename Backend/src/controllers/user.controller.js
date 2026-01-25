@@ -3,8 +3,7 @@ import { User } from "../models/user.model.js";
 
 export const getAllUsers = async (req, res, next)=>{
     try {
-        const currentUserId = req.auth.userId
-        const users = await User.find({clerkId: {$ne: currentUserId}})
+        const users = await User.find()
         res.status(200).json(users)
     } catch (error) {
         console.log("error in getAllUsers "+error);
@@ -16,7 +15,7 @@ export const getAllUsers = async (req, res, next)=>{
 export const getUserById = async (req,res,next)=>{
     try {
         const {id} = req.params
-        const user = await User.findOne({_id: id})
+        const user = await User.find({_id: id})
         if(!user){
             return res.status(404).json("User not found")
         }
@@ -31,7 +30,7 @@ export const getUserById = async (req,res,next)=>{
 export const getCurrentUser = async (req,res,next)=>{
     try {
         const id = req.auth.userId
-        const user = await User.findOne({clerkId: id})
+        const user = await User.find({clerkId: id})
         res.status(200).json(user)
     } catch (error) {
         console.log("error in getCurrentUser "+error);
@@ -44,23 +43,23 @@ export const followUser = async (req,res,next)=>{
     try {
         const {toFollow} = req.pody
         const authed = req.auth.userId
-        const authedId = await User.findOne({clerkId: authed}).select("_id")
+        const authedId = await User.find({clerkId: authed}).select("_id")
         
         await User.findByIdAndUpdate(authedId,{
-            $addToSet: {follow: toFollow}
+            $push: {follow: toFollow}
         })
         await User.findByIdAndUpdate(toFollow,{
-            $addToSet: {followers: authedId}
+            $push: {followers: authedId}
         })
         
-        const isFriend = await User.findById(authedId).select("followers").findById(toFollow)
+        const isFriend = await User.find({clerkId: authed}).select("followers").findById(toFollow)
         
         if(isFriend){
             await User.findByIdAndUpdate(authedId,{
-                $addToSet: {frindes: toFollow}
+                $push: {frindes: toFollow}
             })
             await User.findByIdAndUpdate(toFollow,{
-                $addToSet: {frindes: authedId}
+                $push: {frindes: authedId}
             })
         }
 

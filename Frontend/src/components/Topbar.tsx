@@ -1,0 +1,36 @@
+import { SignedIn, SignedOut, SignOutButton } from "@clerk/clerk-react"
+import { LayoutDashboardIcon } from "lucide-react"
+import { useState } from "react"
+import { Link } from "react-router-dom"
+import SignInOAuthBottuns from "./SignInOAuthBottuns"
+
+const Topbar = () => {
+    const [isAdmin,setIsAdmin] = useState(false)
+  return (
+    <div className="flex items-center justify-between sticky p-4 top-0 bg-zinc-900/75 
+        backdrop-blur-md z-10
+    ">
+        <div className="flex gap-2 items-center">
+            Spotify
+        </div>
+        <div className="flex gap-4 items-center">
+            {isAdmin&& (
+                <Link to={"/admin"}>
+                    <LayoutDashboardIcon className="size-4 mr-2"/>
+                    Admin Dashboard
+                </Link>
+            )}
+
+            <SignedIn>
+                <SignOutButton/>
+            </SignedIn>
+
+            <SignedOut>
+                <SignInOAuthBottuns/>
+            </SignedOut>
+        </div>
+    </div>
+  )
+}
+
+export default Topbar

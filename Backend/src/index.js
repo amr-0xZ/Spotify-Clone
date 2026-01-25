@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import {clerkMiddleware} from "@clerk/express"
 import fileUpload from "express-fileupload"
 import path from "path"
+import cors from 'cors'
 
 //DB connection
 import connectDB from "./lib/db.js"
@@ -24,6 +25,19 @@ const NODE_MODE = process.env.NODE_MODE
 
 //Meddlewares
 app.use(express.json())
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}))
+// app.options('*' ,cors({
+//     origin: 'http://localhost:3000',
+//     credentials: true,
+//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//     allowedHeaders: ['Content-Type', 'Authorization']
+// }))
+
 app.use(clerkMiddleware())
 app.use(fileUpload({
     useTempFiles: true,
@@ -33,6 +47,7 @@ app.use(fileUpload({
         fileSize: 10*1024*1024 //10MB
     }
 }))
+
 
 //root routes
 app.use("/api/users", userRouts)
