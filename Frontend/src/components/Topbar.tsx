@@ -8,7 +8,7 @@ const Topbar = () => {
     const [isAdmin,setIsAdmin] = useState(false)
   return (
     <div className="flex items-center justify-between sticky p-4 top-0 bg-zinc-900/75 
-        backdrop-blur-md z-10
+        backdrop-blur-md z-10 rounded-lg
     ">
         <div className="flex gap-2 items-center">
             Spotify

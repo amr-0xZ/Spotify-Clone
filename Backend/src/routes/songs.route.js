@@ -4,16 +4,14 @@ import { getAllSongs, getFeaturedSongs, getForYou, getLikedSongs, getSongById, g
 
 const router = Router()
 
-router.use(protectRout)
-
-router.get('/',requireAdmin,getAllSongs)
+router.get('/',protectRout,requireAdmin,getAllSongs)
 router.get('/:id',getSongById)
 router.get('/:name', getSongByName)
 router.get('/featured',getFeaturedSongs)
-router.get('/foryou', getForYou)
+router.get('/foryou',protectRout, getForYou)
 router.get('/trending', getTrending)
-router.get('/liked', getLikedSongs)
-router.post('/', likeSong)
-router.delete('/:id', unLikeSong)
+router.get('/liked',protectRout, getLikedSongs)
+router.post('/',protectRout, likeSong)
+router.delete('/:id',protectRout, unLikeSong)
 
 export default router
