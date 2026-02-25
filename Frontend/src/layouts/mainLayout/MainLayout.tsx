@@ -3,13 +3,17 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import type { PanelSize } from "react-resizable-panels";
 import { Outlet } from "react-router-dom";
 import LeftSidebar from "./LeftSidebar";
 import Topbar from "@/components/Topbar";
+import { SignedIn } from "@clerk/clerk-react";
+import FriendsActivity from "@/components/FriendsActivity";
 import { useEffect, useState } from "react";
 
 const MainLayout = () => {
   const [isMobile, setIsMobile] = useState(false);
+  const [leftPanelSize, setLeftPanelSize] = useState(20);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -31,31 +35,38 @@ const MainLayout = () => {
         {/* left sidebar */}
         <ResizablePanel
           defaultSize="20%"
-          minSize={isMobile ? "0%" : "10%"}
+          minSize={isMobile ? "0%" : "5%"}
           maxSize="30%"
+          onResize={(panelSize: PanelSize) =>
+            setLeftPanelSize(panelSize.asPercentage)
+          }
         >
-          <LeftSidebar />
+          <LeftSidebar isCollapsed={leftPanelSize < 12} />
         </ResizablePanel>
 
         <ResizableHandle className="w-2 bg-black rounded-lg transition-colors" />
 
         {/* Main content */}
         <ResizablePanel defaultSize={isMobile ? "80%" : "60%"}>
-          <Outlet />
+          <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent">
+            <Outlet />
+          </div>
         </ResizablePanel>
 
         {!isMobile && (
           <>
             <ResizableHandle className="w-2 bg-black rounded-lg transition-colors" />
 
-            {/* right sidebar */}
+            {/* right sidebar - only visible to logged in users */}
             <ResizablePanel
               defaultSize="20%"
               minSize="0%"
               maxSize="25%"
               collapsedSize="0%"
             >
-              right side bar
+              <SignedIn>
+                <FriendsActivity />
+              </SignedIn>
             </ResizablePanel>
           </>
         )}

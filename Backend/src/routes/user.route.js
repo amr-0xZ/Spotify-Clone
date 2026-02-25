@@ -1,17 +1,25 @@
 import { Router } from "express";
 import { protectRout, requireAdmin } from "../middlewares/auth.middleware.js";
-import { followUser, getAllUsers, getCurrentUser, getUserById, unFollowUser } from "../controllers/user.controller.js";
+import {
+  followUser,
+  getAllUsers,
+  getCurrentUser,
+  getFriends,
+  getUserById,
+  unFollowUser,
+} from "../controllers/user.controller.js";
 
-const router = Router()
+const router = Router();
 
-router.use(protectRout)
+router.use(protectRout);
 
-router.get('/', requireAdmin, getAllUsers)
-router.get('/:id',getUserById)
-router.get('/current', getCurrentUser)
-router.post('/', followUser)
-router.delete('/:id', unFollowUser)
+router.get("/", requireAdmin, getAllUsers);
+router.get("/friends", getFriends);
+router.get("/:id", getUserById);
+router.get("/current", getCurrentUser);
+router.post("/", followUser);
+router.delete("/:id", unFollowUser);
 
 //to do: getMessages
 
-export default router
+export default router;
